@@ -46,7 +46,7 @@
 
 2.  **複製專案**:
     ```bash
-    git clone https://github.com/YourUsername/BreakfastApp.git
+    git clone https://github.com/casper56/BreakfastApp.git
     cd BreakfastApp
     ```
 
