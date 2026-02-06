@@ -1,0 +1,17 @@
+# .gitignore for .NET
+[Bb]in/
+[Oo]bj/
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Gemini temporary files
+.gemini-clipboard/
+*.jpg
+*.png
+!images/**/*.jpg
+!images/**/*.png
+!bug*.jpg
+!p*.jpg
