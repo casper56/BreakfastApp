@@ -76,9 +76,17 @@ namespace BreakfastApp
                         y += 10;
                         g.DrawLine(Pens.Black, margin, y, width + margin, y);
                         y += 15;
-                        string totalStr = $"總額: ${order.TotalAmount}";
-                        float tWidth = g.MeasureString(totalStr, fontTitle).Width;
-                        g.DrawString(totalStr, fontTitle, Brushes.DarkRed, width + margin - tWidth, y);
+
+                        int totalQty = order.Items.Sum(x => x.Quantity);
+                        string qtyTotalStr = $"總數量: {totalQty}";
+                        string totalAmountStr = $"總額: ${order.TotalAmount}";
+                        
+                        // 總數量顯示於左側
+                        g.DrawString(qtyTotalStr, fontContent, Brushes.Black, margin, y + 5);
+
+                        // 總額顯示於右側
+                        float tWidth = g.MeasureString(totalAmountStr, fontTitle).Width;
+                        g.DrawString(totalAmountStr, fontTitle, Brushes.DarkRed, width + margin - tWidth, y);
                     }
                     
                     y += 50;
