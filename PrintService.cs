@@ -53,8 +53,9 @@ namespace BreakfastApp
                             string qtyStr = $"x{item.Quantity}";
                             string priceStr = $"${item.Subtotal}";
                             
-                            // 數量固定於右側 200px 處
-                            g.DrawString(qtyStr, fontContent, Brushes.Black, margin + 200, y);
+                            // 數量加大並加粗，固定於右側 200px 處
+                            Font fontQty = new Font(fontContent.FontFamily, 12, FontStyle.Bold);
+                            g.DrawString(qtyStr, fontQty, Brushes.Black, margin + 200, y - 2);
                             
                             // 小計則靠右對齊
                             float pWidth = g.MeasureString(priceStr, fontContent).Width;
