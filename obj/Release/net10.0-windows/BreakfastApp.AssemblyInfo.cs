@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("BreakfastApp")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Release")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+1a229ffb5a271f00dbe2448e7ee00d624465f0e7")]
 [assembly: System.Reflection.AssemblyProductAttribute("BreakfastApp")]
 [assembly: System.Reflection.AssemblyTitleAttribute("BreakfastApp")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
