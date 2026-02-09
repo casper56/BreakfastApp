@@ -22,6 +22,8 @@ namespace BreakfastApp
         
         private List<CartItem> _cartItems = new List<CartItem>();
         private Dictionary<string, Image> _imageCache = new Dictionary<string, Image>();
+        private string _cartSortColumn = "";
+        private SortOrder _cartSortOrder = SortOrder.None;
 
         private Label lblLoading; 
 
@@ -86,7 +88,14 @@ namespace BreakfastApp
             
             pnlToolbar.Controls.Add(new Label { Text = " |  🔍 搜尋:", AutoSize = true, Margin = new Padding(10, 8, 0, 0) });
             txtSearchMenu = new TextBox { Width = 120, Margin = new Padding(3, 5, 0, 0) };
-            txtSearchMenu.TextChanged += (s, e) => GenerateMenuTabs(); 
+            txtSearchMenu.KeyDown += (s, e) => 
+            {
+                if (e.KeyCode == Keys.Enter)
+                {
+                    e.SuppressKeyPress = true; // 防止警告音
+                    GenerateMenuTabs();
+                }
+            };
             pnlToolbar.Controls.Add(txtSearchMenu);
             pnlHeader.Controls.Add(pnlToolbar);
 
@@ -146,6 +155,23 @@ namespace BreakfastApp
             dgvCart.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = "Subtotal", HeaderText = "小計", Width = 80, ReadOnly = true });
             dgvCart.Columns.Add(new DataGridViewButtonColumn { HeaderText = "操作", Text = "刪除", UseColumnTextForButtonValue = true, Width = 60 });
             
+            // 支援標題點擊排序
+            dgvCart.ColumnHeaderMouseClick += (s, e) => 
+            {
+                var col = dgvCart.Columns[e.ColumnIndex];
+                if (string.IsNullOrEmpty(col.DataPropertyName)) return;
+
+                if (_cartSortColumn == col.DataPropertyName)
+                    _cartSortOrder = (_cartSortOrder == SortOrder.Ascending) ? SortOrder.Descending : SortOrder.Ascending;
+                else
+                {
+                    _cartSortColumn = col.DataPropertyName;
+                    _cartSortOrder = SortOrder.Ascending;
+                }
+
+                ApplyCartSort();
+            };
+
             dgvCart.CellValueChanged += (s, e) => { if (e.RowIndex >= 0) UpdateCartDisplay(); };
             dgvCart.CellContentClick += (s, e) => 
             {
@@ -189,18 +215,20 @@ namespace BreakfastApp
             bottomPanel.Controls.Add(grpCart, 0, 0);
 
             Panel pnlCheckout = new Panel { Dock = DockStyle.Fill, Padding = new Padding(10) };
-            lblTotal = new Label { Text = "總金額: $0", Font = new Font("Microsoft JhengHei", 24, FontStyle.Bold), Dock = DockStyle.Top, Height = 60, TextAlign = ContentAlignment.MiddleCenter, ForeColor = Color.DarkRed };
+            lblTotal = new Label { Text = "總金額: $0", Font = new Font("Microsoft JhengHei", 24, FontStyle.Bold), Dock = DockStyle.Bottom, Height = 60, TextAlign = ContentAlignment.MiddleCenter, ForeColor = Color.DarkRed };
             lblStatus = new Label { Text = "系統就緒", Dock = DockStyle.Bottom, AutoSize = true };
             Button btnClearCart = new Button { Text = "🧹 清空購物車", Dock = DockStyle.Bottom, Height = 35, BackColor = Color.WhiteSmoke, Font = new Font("Microsoft JhengHei", 10) };
             btnClearCart.Click += (s, e) => { if (MessageBox.Show("確定清空購物車？", "提示", MessageBoxButtons.YesNo) == DialogResult.Yes) { _cartItems.Clear(); UpdateCartDisplay(); } };
             Button btnCheckout = new Button { Text = "💰 結帳並出單", Dock = DockStyle.Bottom, Height = 60, BackColor = Color.Gold, Font = new Font("Microsoft JhengHei", 14, FontStyle.Bold), FlatStyle = FlatStyle.Flat };
             btnCheckout.Click += (s, e) => PerformCheckout();
             
-            pnlCheckout.Controls.Add(lblTotal);
-            pnlCheckout.Controls.Add(btnCheckout);
-            pnlCheckout.Controls.Add(new Panel { Dock = DockStyle.Bottom, Height = 10 });
-            pnlCheckout.Controls.Add(btnClearCart);
+            // 依序加入 (最後加入的會在最上方)
             pnlCheckout.Controls.Add(lblStatus);
+            pnlCheckout.Controls.Add(btnClearCart);
+            pnlCheckout.Controls.Add(new Panel { Dock = DockStyle.Bottom, Height = 10 });
+            pnlCheckout.Controls.Add(btnCheckout);
+            pnlCheckout.Controls.Add(lblTotal);
+            
             bottomPanel.Controls.Add(pnlCheckout, 1, 0);
             
             splitMain.Panel2.Controls.Add(bottomPanel);
@@ -208,6 +236,12 @@ namespace BreakfastApp
 
         private void GenerateMenuTabs()
         {
+            lblLoading.Text = "選單處理中...";
+            lblLoading.Visible = true;
+            lblLoading.BringToFront();
+            tabMenu.Visible = false;
+            Application.DoEvents();
+
             tabMenu.SuspendLayout(); 
             try
             {
@@ -243,6 +277,8 @@ namespace BreakfastApp
             finally
             {
                 tabMenu.ResumeLayout(); 
+                lblLoading.Visible = false;
+                tabMenu.Visible = true;
             }
         }
 
@@ -428,29 +464,54 @@ namespace BreakfastApp
 
         private void UpdateCartDisplay()
         {
+            if (!string.IsNullOrEmpty(_cartSortColumn) && _cartSortOrder != SortOrder.None)
+            {
+                switch (_cartSortColumn)
+                {
+                    case "Name":
+                        _cartItems = _cartSortOrder == SortOrder.Ascending ? _cartItems.OrderBy(x => x.Name).ToList() : _cartItems.OrderByDescending(x => x.Name).ToList();
+                        break;
+                    case "OptionName":
+                        _cartItems = _cartSortOrder == SortOrder.Ascending ? _cartItems.OrderBy(x => x.OptionName).ToList() : _cartItems.OrderByDescending(x => x.OptionName).ToList();
+                        break;
+                    case "Price":
+                        _cartItems = _cartSortOrder == SortOrder.Ascending ? _cartItems.OrderBy(x => x.Price).ToList() : _cartItems.OrderByDescending(x => x.Price).ToList();
+                        break;
+                    case "Quantity":
+                        _cartItems = _cartSortOrder == SortOrder.Ascending ? _cartItems.OrderBy(x => x.Quantity).ToList() : _cartItems.OrderByDescending(x => x.Quantity).ToList();
+                        break;
+                    case "Subtotal":
+                        _cartItems = _cartSortOrder == SortOrder.Ascending ? _cartItems.OrderBy(x => x.Subtotal).ToList() : _cartItems.OrderByDescending(x => x.Subtotal).ToList();
+                        break;
+                }
+            }
+
             dgvCart.DataSource = null;
             dgvCart.DataSource = _cartItems;
             lblTotal.Text = $"總金額: ${_cartItems.Sum(x => x.Subtotal)}";
+
+            if (!string.IsNullOrEmpty(_cartSortColumn))
+            {
+                foreach (DataGridViewColumn col in dgvCart.Columns)
+                {
+                    if (col.DataPropertyName == _cartSortColumn)
+                    {
+                        col.HeaderCell.SortGlyphDirection = _cartSortOrder;
+                        break;
+                    }
+                }
+            }
+        }
+
+        private void ApplyCartSort()
+        {
+            UpdateCartDisplay();
         }
 
         private void RefreshState() 
         { 
-            lblLoading.Text = "資料載入中，請稍候...";
-            lblLoading.Visible = true;
-            lblLoading.BringToFront();
-            tabMenu.Visible = false;
-            Application.DoEvents();
-
-            try
-            {
-                lblStatus.Text = $"商品總數: {_menuService.AllItems.Count} | {DateTime.Now:HH:mm:ss}"; 
-                GenerateMenuTabs(); 
-            }
-            finally
-            {
-                lblLoading.Visible = false;
-                tabMenu.Visible = true;
-            }
+            lblStatus.Text = $"商品總數: {_menuService.AllItems.Count} | {DateTime.Now:HH:mm:ss}"; 
+            GenerateMenuTabs(); 
         }
         private void LoadData(bool autoLoad = false) 
         { 

@@ -49,10 +49,16 @@ namespace BreakfastApp
                         
                         if (type == ReceiptType.Customer)
                         {
-                            // 客戶聯顯示數量與小計
-                            string qtyPrice = $"x{item.Quantity}  ${item.Subtotal}";
-                            float qpWidth = g.MeasureString(qtyPrice, fontContent).Width;
-                            g.DrawString(qtyPrice, fontContent, Brushes.Black, width + margin - qpWidth, y);
+                            // 客戶聯顯示數量與小計 (修正對齊問題)
+                            string qtyStr = $"x{item.Quantity}";
+                            string priceStr = $"${item.Subtotal}";
+                            
+                            // 數量固定於右側 200px 處
+                            g.DrawString(qtyStr, fontContent, Brushes.Black, margin + 200, y);
+                            
+                            // 小計則靠右對齊
+                            float pWidth = g.MeasureString(priceStr, fontContent).Width;
+                            g.DrawString(priceStr, fontContent, Brushes.Black, width + margin - pWidth, y);
                         }
                         else
                         {
