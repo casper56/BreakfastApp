@@ -115,9 +115,9 @@ namespace BreakfastApp
             tabMenu = new TabControl 
             { 
                 Dock = DockStyle.Fill, 
-                Font = new Font("Microsoft JhengHei", 14, FontStyle.Bold), // 加大分頁標籤字體
-                ItemSize = new Size(120, 45), // 加大分頁按鈕尺寸
-                SizeMode = TabSizeMode.Fixed // 確保尺寸固定生效
+                Font = new Font("Microsoft JhengHei", 12, FontStyle.Bold), // 縮小至 12pt
+                ItemSize = new Size(100, 38), // 縮小尺寸
+                SizeMode = TabSizeMode.Fixed 
             };
             grpMenu.Controls.Add(lblLoading); 
             grpMenu.Controls.Add(tabMenu);
