@@ -112,7 +112,13 @@ namespace BreakfastApp
                 BackColor = Color.WhiteSmoke,
                 Visible = false 
             };
-            tabMenu = new TabControl { Dock = DockStyle.Fill, Font = new Font("Microsoft JhengHei", 11) };
+            tabMenu = new TabControl 
+            { 
+                Dock = DockStyle.Fill, 
+                Font = new Font("Microsoft JhengHei", 14, FontStyle.Bold), // 加大分頁標籤字體
+                ItemSize = new Size(120, 45), // 加大分頁按鈕尺寸
+                SizeMode = TabSizeMode.Fixed // 確保尺寸固定生效
+            };
             grpMenu.Controls.Add(lblLoading); 
             grpMenu.Controls.Add(tabMenu);
             splitMain.Panel1.Controls.Add(grpMenu);
