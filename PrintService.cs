@@ -62,31 +62,36 @@ namespace BreakfastApp
                         }
                         else
                         {
-                            // 廚房聯強化數量顯示
+                            // 廚房聯強化數量顯示 (修正對齊問題)
                             string qtyStr = $"數量: {item.Quantity}";
-                            float qWidth = g.MeasureString(qtyStr, fontContent).Width;
-                            g.DrawString(qtyStr, new Font(fontContent, FontStyle.Bold), Brushes.Black, width + margin - qWidth, y);
+                            // 使用固定位置對齊 (與客戶聯規格一致或稍作調整)
+                            g.DrawString(qtyStr, new Font(fontContent, FontStyle.Bold), Brushes.Black, margin + 200, y);
                         }
                         y += type == ReceiptType.Kitchen ? 35 : 25;
                     }
 
-                    // 4. 總計 (僅客戶聯)
+                    // 4. 總計
+                    y += 10;
+                    g.DrawLine(Pens.Black, margin, y, width + margin, y);
+                    y += 15;
+
+                    int totalQty = order.Items.Sum(x => x.Quantity);
+                    string qtyTotalStr = $"總數量: {totalQty}";
+
                     if (type == ReceiptType.Customer)
                     {
-                        y += 10;
-                        g.DrawLine(Pens.Black, margin, y, width + margin, y);
-                        y += 15;
-
-                        int totalQty = order.Items.Sum(x => x.Quantity);
-                        string qtyTotalStr = $"總數量: {totalQty}";
                         string totalAmountStr = $"總額: ${order.TotalAmount}";
                         
-                        // 總數量顯示於左側
+                        // 客戶聯：總數量（左）與總額（右）
                         g.DrawString(qtyTotalStr, fontContent, Brushes.Black, margin, y + 5);
 
-                        // 總額顯示於右側
                         float tWidth = g.MeasureString(totalAmountStr, fontTitle).Width;
                         g.DrawString(totalAmountStr, fontTitle, Brushes.DarkRed, width + margin - tWidth, y);
+                    }
+                    else
+                    {
+                        // 廚房聯：僅強化顯示總數量
+                        g.DrawString(qtyTotalStr, fontTitle, Brushes.Black, margin, y);
                     }
                     
                     y += 50;
