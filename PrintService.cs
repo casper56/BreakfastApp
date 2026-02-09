@@ -27,7 +27,7 @@ namespace BreakfastApp
                     Font fontTitle = new Font("Microsoft JhengHei", type == ReceiptType.Kitchen ? 20 : 16, FontStyle.Bold);
                     Font fontContent = new Font("Microsoft JhengHei", type == ReceiptType.Kitchen ? 14 : 10);
                     Font fontSmall = new Font("Microsoft JhengHei", 9);
-                    
+
                     // 1. 標題
                     string title = type == ReceiptType.Kitchen ? "【廚房製作單】" : "早餐店點餐收據";
                     g.DrawString(title, fontTitle, Brushes.Black, margin, y);
@@ -46,17 +46,17 @@ namespace BreakfastApp
                     {
                         string nameStr = $"{item.Name}({item.OptionName})";
                         g.DrawString(nameStr, fontContent, Brushes.Black, margin, y);
-                        
+
                         if (type == ReceiptType.Customer)
                         {
                             // 客戶聯顯示數量與小計 (修正對齊問題)
                             string qtyStr = $"x{item.Quantity}";
                             string priceStr = $"${item.Subtotal}";
-                            
+
                             // 數量加大並加粗，固定於右側 200px 處
                             Font fontQty = new Font(fontContent.FontFamily, 12, FontStyle.Bold);
                             g.DrawString(qtyStr, fontQty, Brushes.Black, margin + 200, y - 2);
-                            
+
                             // 小計則靠右對齊
                             float pWidth = g.MeasureString(priceStr, fontContent).Width;
                             g.DrawString(priceStr, fontContent, Brushes.Black, width + margin - pWidth, y);
@@ -77,28 +77,28 @@ namespace BreakfastApp
                     y += 15;
 
                     int totalQty = order.Items.Sum(x => x.Quantity);
-                    string qtyTotalStr = $"總數量: {totalQty}";
+                    string qtyTotalStr = $"數量: {totalQty,7}";
 
                     if (type == ReceiptType.Customer)
                     {
                         // 1. 總數量顯示於上方 (靠右) - 字型加大
-                        Font fontTotalQty = new Font(fontContent.FontFamily, 14, FontStyle.Bold);
+                        Font fontTotalQty = new Font(fontContent.FontFamily, 12, FontStyle.Bold);
                         float qWidth = g.MeasureString(qtyTotalStr, fontTotalQty).Width;
                         g.DrawString(qtyTotalStr, fontTotalQty, Brushes.Black, width + margin - qWidth, y);
-                        
+
                         y += 30; // 往下移位 (配合較大字型增加間距)
 
                         // 2. 總額顯示於下方 (靠右)
                         string totalAmountStr = $"總額: ${order.TotalAmount}";
-                        float tWidth = g.MeasureString(totalAmountStr, fontTitle).Width;
-                        g.DrawString(totalAmountStr, fontTitle, Brushes.DarkRed, width + margin - tWidth, y);
+                        float tWidth = g.MeasureString(totalAmountStr, fontTotalQty).Width;
+                        g.DrawString(totalAmountStr, fontTotalQty, Brushes.DarkRed, width + margin - tWidth, y);
                     }
                     else
                     {
                         // 廚房聯：僅強化顯示總數量
                         g.DrawString(qtyTotalStr, fontTitle, Brushes.Black, margin, y);
                     }
-                    
+
                     y += 50;
                     g.DrawString("----- 結束 -----", fontSmall, Brushes.Gray, margin + 80, y);
                 };
@@ -124,14 +124,14 @@ namespace BreakfastApp
 
             using (var printDoc = new PrintDocument())
             {
-                printDoc.BeginPrint += (s, e) => 
+                printDoc.BeginPrint += (s, e) =>
                 {
                     currentCatIdx = 0;
                     currentItemIdx = 0;
                     pageNum = 1;
                 };
 
-                printDoc.PrintPage += (s, e) => 
+                printDoc.PrintPage += (s, e) =>
                 {
                     Graphics g = e.Graphics;
                     Font fontTitle = new Font("Microsoft JhengHei", 18, FontStyle.Bold);
@@ -139,11 +139,11 @@ namespace BreakfastApp
                     Font fontContent = new Font("Microsoft JhengHei", 11);
                     Font fontSmall = new Font("Microsoft JhengHei", 10);
                     Brush brush = Brushes.Black;
-                    
+
                     float y = 50;
                     float margin = 50;
-                    float bottomMargin = e.PageBounds.Height - 80; 
-                    
+                    float bottomMargin = e.PageBounds.Height - 80;
+
                     if (pageNum == 1)
                     {
                         g.DrawString("早餐店完整菜單明細", fontTitle, brush, margin, y);
@@ -194,15 +194,15 @@ namespace BreakfastApp
                             if (item.PriceDanbing.HasValue) prices.Add($"餅${item.PriceDanbing}");
                             if (item.PriceHefen.HasValue) prices.Add($"河${item.PriceHefen}");
                             if (item.Price.HasValue) prices.Add($"${item.Price}");
-                            
+
                             string priceStr = string.Join(", ", prices);
                             if (string.IsNullOrEmpty(priceStr)) priceStr = "(詳見選項)";
 
                             g.DrawString($"[{item.Id:00}] {item.Name}", fontContent, brush, margin + 20, y);
-                            
+
                             float priceWidth = g.MeasureString(priceStr, fontContent).Width;
                             g.DrawString(priceStr, fontContent, Brushes.DimGray, e.PageBounds.Width - margin - priceWidth, y);
-                            
+
                             y += 25;
                             currentItemIdx++;
                         }
