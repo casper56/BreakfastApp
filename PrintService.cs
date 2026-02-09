@@ -81,11 +81,12 @@ namespace BreakfastApp
 
                     if (type == ReceiptType.Customer)
                     {
-                        // 1. 總數量顯示於上方 (靠右)
-                        float qWidth = g.MeasureString(qtyTotalStr, fontContent).Width;
-                        g.DrawString(qtyTotalStr, fontContent, Brushes.Black, width + margin - qWidth, y);
+                        // 1. 總數量顯示於上方 (靠右) - 字型加大
+                        Font fontTotalQty = new Font(fontContent.FontFamily, 14, FontStyle.Bold);
+                        float qWidth = g.MeasureString(qtyTotalStr, fontTotalQty).Width;
+                        g.DrawString(qtyTotalStr, fontTotalQty, Brushes.Black, width + margin - qWidth, y);
                         
-                        y += 25; // 往下移位
+                        y += 30; // 往下移位 (配合較大字型增加間距)
 
                         // 2. 總額顯示於下方 (靠右)
                         string totalAmountStr = $"總額: ${order.TotalAmount}";
