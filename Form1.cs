@@ -46,7 +46,7 @@ namespace BreakfastApp
         private void SetupDynamicUI()
         {
             this.Text = "早餐店點餐管理系統 (智慧選擇版) - v1.2";
-            this.Size = new Size(1100, 900); // 調整寬度至 1080
+            this.Size = new Size(1100, 900); // 調整寬度至 1100
             this.FormBorderStyle = FormBorderStyle.FixedSingle; // 禁止調整大小
             this.MaximizeBox = false; // 停用最大化按鈕
             this.StartPosition = FormStartPosition.CenterScreen;
@@ -267,11 +267,12 @@ namespace BreakfastApp
                     // 如果有搜尋且該分類沒東西，則不顯示該分頁 (除非是原本就沒搜尋)
                     if (!string.IsNullOrEmpty(filter) && filteredItems.Count == 0) continue;
 
-                                        TabPage tab = new TabPage(cat.CategoryName) { BackColor = Color.White };
-                                        // 經過計算：1080 寬度扣除邊框後剩約 1042，5 顆按鈕加邊距共 1010，左右各需 16 距離。
-                                        // 扣除按鈕自帶 6 邊距，Padding 設為 10 可達到完美等距。
-                                        FlowLayoutPanel pnl = new FlowLayoutPanel { Dock = DockStyle.Fill, AutoScroll = true, Padding = new Padding(10), WrapContents = true }; 
-                                        foreach (var item in filteredItems)                    {
+                    TabPage tab = new TabPage(cat.CategoryName) { BackColor = Color.White };
+                    // 經過計算：1100 寬度扣除邊框後剩約 1062，5 顆按鈕加邊距共 1010，左右各需 26 距離。
+                    // 扣除按鈕自帶 6 邊距，Padding 設為 20 可達到完美等距。
+                    FlowLayoutPanel pnl = new FlowLayoutPanel { Dock = DockStyle.Fill, AutoScroll = true, Padding = new Padding(20, 10, 10, 10), WrapContents = true }; 
+                    foreach (var item in filteredItems)
+                    {
                         pnl.Controls.Add(CreateSmartButton(item));
                     }
                     // 加入一個高度為 40 的隱形標籤作為底部間距，寬度設為 100 確保不會強制換行但能撐開高度
