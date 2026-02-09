@@ -268,9 +268,8 @@ namespace BreakfastApp
                     if (!string.IsNullOrEmpty(filter) && filteredItems.Count == 0) continue;
 
                     TabPage tab = new TabPage(cat.CategoryName) { BackColor = Color.White };
-                    // 經過計算：1100 寬度扣除邊框後剩約 1062，5 顆按鈕加邊距共 1010，左右各需 26 距離。
-                    // 扣除按鈕自帶 6 邊距，Padding 設為 20 可達到完美等距。
-                    FlowLayoutPanel pnl = new FlowLayoutPanel { Dock = DockStyle.Fill, AutoScroll = true, Padding = new Padding(20, 10, 10, 10), WrapContents = true }; 
+                    // 再次微調：1100 寬度下，右側仍偏大，將左側 Padding 稍微增加至 23。
+                    FlowLayoutPanel pnl = new FlowLayoutPanel { Dock = DockStyle.Fill, AutoScroll = true, Padding = new Padding(23, 10, 10, 10), WrapContents = true }; 
                     foreach (var item in filteredItems)
                     {
                         pnl.Controls.Add(CreateSmartButton(item));
